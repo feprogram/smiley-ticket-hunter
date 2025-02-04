@@ -8,8 +8,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoadingState } from "./LoadingState";
 import { FlightResults } from "./FlightResults";
 import { Flight } from "@/types/flight";
+import { FlightTypeSelect } from "./FlightTypeSelect";
 
-// Datos de ejemplo - En un caso real, esto vendría de una API
 const MOCK_FLIGHTS: Flight[] = [
   {
     id: "1",
@@ -51,6 +51,7 @@ export const SearchForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [flights, setFlights] = useState<Flight[]>([]);
   const [formData, setFormData] = useState({
+    flightType: "roundtrip",
     origin: "",
     destination: "",
     departureDate: undefined as Date | undefined,
@@ -90,6 +91,11 @@ export const SearchForm = () => {
   return (
     <div>
       <form onSubmit={handleSearch} className="space-y-6">
+        <FlightTypeSelect
+          value={formData.flightType}
+          onChange={(value) => setFormData({ ...formData, flightType: value })}
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <LocationInput
             label="Desde"
@@ -111,11 +117,13 @@ export const SearchForm = () => {
             date={formData.departureDate}
             onSelect={(date) => setFormData({ ...formData, departureDate: date })}
           />
-          <DatePicker
-            label="Fecha de Vuelta"
-            date={formData.returnDate}
-            onSelect={(date) => setFormData({ ...formData, returnDate: date })}
-          />
+          {formData.flightType === "roundtrip" && (
+            <DatePicker
+              label="Fecha de Vuelta"
+              date={formData.returnDate}
+              onSelect={(date) => setFormData({ ...formData, returnDate: date })}
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
