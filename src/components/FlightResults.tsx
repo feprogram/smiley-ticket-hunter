@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/table";
 import { Flight } from "@/types/flight";
 import { formatCurrency } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 interface FlightResultsProps {
   flights: Flight[];
@@ -15,6 +17,11 @@ interface FlightResultsProps {
 
 export const FlightResults = ({ flights }: FlightResultsProps) => {
   if (!flights.length) return null;
+
+  const handleRedirectToSmiles = (flightId: string) => {
+    // En un caso real, esta URL debería construirse con los parámetros específicos del vuelo
+    window.open('https://www.smiles.com.ar/emission?', '_blank');
+  };
 
   return (
     <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
@@ -28,6 +35,7 @@ export const FlightResults = ({ flights }: FlightResultsProps) => {
             <TableHead>Paradas</TableHead>
             <TableHead>Precio</TableHead>
             <TableHead>Millas</TableHead>
+            <TableHead>Acción</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -54,6 +62,17 @@ export const FlightResults = ({ flights }: FlightResultsProps) => {
                 {formatCurrency(flight.price)}
               </TableCell>
               <TableCell>{flight.miles.toLocaleString()} millas</TableCell>
+              <TableCell>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRedirectToSmiles(flight.id)}
+                  className="w-full"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Ver en Smiles
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
