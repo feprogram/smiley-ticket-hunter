@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -18,9 +19,19 @@ interface FlightResultsProps {
 export const FlightResults = ({ flights }: FlightResultsProps) => {
   if (!flights.length) return null;
 
-  const handleRedirectToSmiles = (flightId: string) => {
-    // En un caso real, esta URL debería construirse con los parámetros específicos del vuelo
-    window.open('https://www.smiles.com.ar/emission?', '_blank');
+  const handleRedirectToSmiles = (flight: Flight) => {
+    const params = new URLSearchParams({
+      originAirportCode: flight.origin,
+      destinationAirportCode: flight.destination,
+      departureDate: flight.departureDate.split(' ')[0], // Solo la fecha, sin la hora
+      adults: '1',
+      children: '0',
+      babies: '0',
+      cabinType: 'all',
+      tripType: 'ONE_WAY'
+    });
+
+    window.open(`https://www.smiles.com.ar/emission?${params.toString()}`, '_blank');
   };
 
   return (
@@ -66,7 +77,7 @@ export const FlightResults = ({ flights }: FlightResultsProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleRedirectToSmiles(flight.id)}
+                  onClick={() => handleRedirectToSmiles(flight)}
                   className="w-full"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
