@@ -34,6 +34,8 @@ export const FlightResults = ({ flights }: FlightResultsProps) => {
     window.open(`https://www.smiles.com.ar/emission?${params.toString()}`, '_blank');
   };
 
+  const calculateTax = (price: number) => price * 0.75;
+
   return (
     <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-2xl font-semibold mb-4">Vuelos Disponibles</h2>
@@ -44,8 +46,7 @@ export const FlightResults = ({ flights }: FlightResultsProps) => {
             <TableHead>Fecha y Hora</TableHead>
             <TableHead>Duración</TableHead>
             <TableHead>Paradas</TableHead>
-            <TableHead>Precio</TableHead>
-            <TableHead>Millas</TableHead>
+            <TableHead className="text-right">Precio</TableHead>
             <TableHead>Acción</TableHead>
           </TableRow>
         </TableHeader>
@@ -69,10 +70,22 @@ export const FlightResults = ({ flights }: FlightResultsProps) => {
                   <span>{flight.stops} parada(s)</span>
                 )}
               </TableCell>
-              <TableCell className="font-medium">
-                {formatCurrency(flight.price)}
+              <TableCell>
+                <div className="space-y-1 text-right">
+                  <div className="font-medium">
+                    Precio Base: {formatCurrency(flight.price)}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Impuestos: {formatCurrency(calculateTax(flight.price))}
+                  </div>
+                  <div className="text-sm font-medium text-gray-900">
+                    Total: {formatCurrency(flight.price + calculateTax(flight.price))}
+                  </div>
+                  <div className="text-sm text-blue-600">
+                    {flight.miles.toLocaleString()} millas
+                  </div>
+                </div>
               </TableCell>
-              <TableCell>{flight.miles.toLocaleString()} millas</TableCell>
               <TableCell>
                 <Button
                   variant="outline"
