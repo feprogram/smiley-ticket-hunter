@@ -1,11 +1,13 @@
+
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { CityPredictions } from "./CityPredictions";
 
-// Lista de ciudades de ejemplo - En un caso real, esto vendría de una API
+// Lista de ciudades expandida incluyendo ciudades de Estados Unidos
 const CITIES = [
+  // Argentina
   "Buenos Aires, Argentina",
   "Córdoba, Argentina",
   "Rosario, Argentina",
@@ -16,6 +18,22 @@ const CITIES = [
   "Tucumán, Argentina",
   "Ushuaia, Argentina",
   "Puerto Iguazú, Argentina",
+  // Estados Unidos
+  "New York, Estados Unidos",
+  "Los Angeles, Estados Unidos",
+  "Chicago, Estados Unidos",
+  "Houston, Estados Unidos",
+  "Phoenix, Estados Unidos",
+  "Philadelphia, Estados Unidos",
+  "San Antonio, Estados Unidos",
+  "San Diego, Estados Unidos",
+  "Dallas, Estados Unidos",
+  "San Francisco, Estados Unidos",
+  "Miami, Estados Unidos",
+  "Las Vegas, Estados Unidos",
+  "Orlando, Estados Unidos",
+  "Washington DC, Estados Unidos",
+  "Boston, Estados Unidos"
 ];
 
 interface LocationInputProps {
@@ -74,7 +92,6 @@ export const LocationInput = ({
         }}
         onBlur={() => {
           setIsFocused(false);
-          // Pequeño delay para permitir que el click en las predicciones se registre
           setTimeout(() => setShowPredictions(false), 200);
         }}
         placeholder={placeholder}
