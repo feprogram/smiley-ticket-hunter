@@ -20,18 +20,27 @@ export const FlightResults = ({ flights }: FlightResultsProps) => {
   if (!flights.length) return null;
 
   const handleRedirectToSmiles = (flight: Flight) => {
+    // Convertir la fecha al formato requerido por Smiles (YYYY-MM-DD)
+    const formattedDate = flight.departureDate.split(' ')[0];
+
+    // Crear la URL base de Smiles para búsqueda de vuelos
+    const baseUrl = "https://www.smiles.com.ar/emissao-com-milhas";
+    
+    // Construir los parámetros de la URL
     const params = new URLSearchParams({
+      tripType: '1', // 1 = ida
       originAirportCode: flight.origin,
       destinationAirportCode: flight.destination,
-      departureDate: flight.departureDate.split(' ')[0], // Solo la fecha, sin la hora
+      departureDate: formattedDate,
       adults: '1',
       children: '0',
-      babies: '0',
-      cabinType: 'all',
-      tripType: 'ONE_WAY'
+      infants: '0',
+      cabinType: 'ec', // económica
+      highlightedBox: 'smiles'
     });
 
-    window.open(`https://www.smiles.com.ar/emission?${params.toString()}`, '_blank');
+    // Abrir la URL en una nueva pestaña
+    window.open(`${baseUrl}?${params.toString()}`, '_blank');
   };
 
   const calculateTax = (price: number) => price * 0.75;
