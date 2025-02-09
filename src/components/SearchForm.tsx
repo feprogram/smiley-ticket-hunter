@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { LocationInput } from "./LocationInput";
 import { DatePicker } from "./DatePicker";
@@ -10,41 +11,45 @@ import { FlightResults } from "./FlightResults";
 import { Flight } from "@/types/flight";
 import { FlightTypeSelect } from "./FlightTypeSelect";
 
-const MOCK_FLIGHTS: Flight[] = [
-  {
-    id: "1",
-    origin: "Buenos Aires",
-    destination: "Córdoba",
-    departureDate: "2024-03-20 08:00",
-    arrivalDate: "2024-03-20 09:30",
-    price: 50000,
-    miles: 15000,
-    stops: 0,
-    duration: "1h 30m"
-  },
-  {
-    id: "2",
-    origin: "Buenos Aires",
-    destination: "Córdoba",
-    departureDate: "2024-03-20 14:00",
-    arrivalDate: "2024-03-20 16:30",
-    price: 45000,
-    miles: 12000,
-    stops: 1,
-    duration: "2h 30m"
-  },
-  {
-    id: "3",
-    origin: "Buenos Aires",
-    destination: "Córdoba",
-    departureDate: "2024-03-20 19:00",
-    arrivalDate: "2024-03-20 20:30",
-    price: 55000,
-    miles: 18000,
-    stops: 0,
-    duration: "1h 30m"
-  }
-];
+const generateMockFlights = (origin: string, destination: string, date?: Date): Flight[] => {
+  if (!origin || !destination || !date) return [];
+
+  return [
+    {
+      id: "1",
+      origin,
+      destination,
+      departureDate: `${date.toISOString().split('T')[0]} 08:00`,
+      arrivalDate: `${date.toISOString().split('T')[0]} 09:30`,
+      price: 50000,
+      miles: 15000,
+      stops: 0,
+      duration: "1h 30m"
+    },
+    {
+      id: "2",
+      origin,
+      destination,
+      departureDate: `${date.toISOString().split('T')[0]} 14:00`,
+      arrivalDate: `${date.toISOString().split('T')[0]} 16:30`,
+      price: 45000,
+      miles: 12000,
+      stops: 1,
+      duration: "2h 30m"
+    },
+    {
+      id: "3",
+      origin,
+      destination,
+      departureDate: `${date.toISOString().split('T')[0]} 19:00`,
+      arrivalDate: `${date.toISOString().split('T')[0]} 20:30`,
+      price: 55000,
+      miles: 18000,
+      stops: 0,
+      duration: "1h 30m"
+    }
+  ];
+};
 
 export const SearchForm = () => {
   const { toast } = useToast();
@@ -62,12 +67,27 @@ export const SearchForm = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.origin || !formData.destination || !formData.departureDate) {
+      toast({
+        title: "Error",
+        description: "Por favor complete todos los campos requeridos",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       // Simulamos una llamada a la API
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      setFlights(MOCK_FLIGHTS);
+      const mockFlights = generateMockFlights(
+        formData.origin,
+        formData.destination,
+        formData.departureDate
+      );
+      setFlights(mockFlights);
       
       toast({
         title: "Búsqueda completada",
