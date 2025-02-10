@@ -3,38 +3,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { CityPredictions } from "./CityPredictions";
-
-// Lista de ciudades expandida incluyendo ciudades de Estados Unidos
-const CITIES = [
-  // Argentina
-  "Buenos Aires, Argentina",
-  "Córdoba, Argentina",
-  "Rosario, Argentina",
-  "Mendoza, Argentina",
-  "Mar del Plata, Argentina",
-  "Salta, Argentina",
-  "San Carlos de Bariloche, Argentina",
-  "Tucumán, Argentina",
-  "Ushuaia, Argentina",
-  "Puerto Iguazú, Argentina",
-  // Estados Unidos
-  "New York, Estados Unidos",
-  "Los Angeles, Estados Unidos",
-  "Chicago, Estados Unidos",
-  "Houston, Estados Unidos",
-  "Phoenix, Estados Unidos",
-  "Philadelphia, Estados Unidos",
-  "San Antonio, Estados Unidos",
-  "San Diego, Estados Unidos",
-  "Dallas, Estados Unidos",
-  "San Francisco, Estados Unidos",
-  "Miami, Estados Unidos",
-  "Las Vegas, Estados Unidos",
-  "Orlando, Estados Unidos",
-  "Washington DC, Estados Unidos",
-  "Boston, Estados Unidos"
-];
+import { airports } from "@/data/airports";
 
 interface LocationInputProps {
   label: string;
@@ -52,13 +21,15 @@ export const LocationInput = ({
   className,
 }: LocationInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [predictions, setPredictions] = useState<string[]>([]);
+  const [predictions, setPredictions] = useState<typeof airports>([]);
   const [showPredictions, setShowPredictions] = useState(false);
 
   useEffect(() => {
     if (value.length >= 2) {
-      const filtered = CITIES.filter((city) =>
-        city.toLowerCase().includes(value.toLowerCase())
+      const filtered = airports.filter((airport) =>
+        airport.code.toLowerCase().includes(value.toLowerCase()) ||
+        airport.city.toLowerCase().includes(value.toLowerCase()) ||
+        airport.name.toLowerCase().includes(value.toLowerCase())
       );
       setPredictions(filtered);
       setShowPredictions(true);
@@ -68,8 +39,8 @@ export const LocationInput = ({
     }
   }, [value]);
 
-  const handleSelect = (city: string) => {
-    onChange(city);
+  const handleSelect = (airport: typeof airports[0]) => {
+    onChange(airport.code);
     setShowPredictions(false);
   };
 
@@ -97,11 +68,21 @@ export const LocationInput = ({
         placeholder={placeholder}
         className="h-12 bg-white/50 backdrop-blur-sm border-gray-200 hover:border-primary focus:border-primary transition-colors duration-200"
       />
-      <CityPredictions
-        predictions={predictions}
-        onSelect={handleSelect}
-        visible={showPredictions}
-      />
+      {showPredictions && predictions.length > 0 && (
+        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-y-auto">
+          {predictions.map((airport) => (
+            <button
+              key={airport.code}
+              className="w-full text-left px-4 py-2 text-sm hover:bg-secondary"
+              onClick={() => handleSelect(airport)}
+            >
+              <span className="font-semibold">{airport.code}</span> - {airport.city}
+              <br />
+              <span className="text-xs text-gray-500">{airport.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { LocationInput } from "./LocationInput";
 import { DatePicker } from "./DatePicker";
@@ -11,44 +10,50 @@ import { FlightResults } from "./FlightResults";
 import { Flight } from "@/types/flight";
 import { FlightTypeSelect } from "./FlightTypeSelect";
 
+const airlines: Airline[] = [
+  { 
+    code: 'AR', 
+    name: 'Aerolíneas Argentinas',
+    logo: 'https://www.aerolineas.com.ar/favicon.ico'
+  },
+  { 
+    code: 'LA', 
+    name: 'LATAM Airlines',
+    logo: 'https://www.latamairlines.com/favicon.ico'
+  },
+  { 
+    code: 'G3', 
+    name: 'GOL Linhas Aéreas',
+    logo: 'https://www.voegol.com.br/favicon.ico'
+  }
+];
+
 const generateMockFlights = (origin: string, destination: string, date?: Date): Flight[] => {
   if (!origin || !destination || !date) return [];
 
-  return [
-    {
-      id: "1",
+  const numFlights = Math.floor(Math.random() * 6) + 5;
+  const flights: Flight[] = [];
+
+  for (let i = 0; i < numFlights; i++) {
+    const baseHour = Math.floor(Math.random() * 24);
+    const durationHours = Math.floor(Math.random() * 8) + 1;
+    const airline = airlines[Math.floor(Math.random() * airlines.length)];
+    
+    flights.push({
+      id: String(i + 1),
       origin,
       destination,
-      departureDate: `${date.toISOString().split('T')[0]} 08:00`,
-      arrivalDate: `${date.toISOString().split('T')[0]} 09:30`,
-      price: 50000,
-      miles: 15000,
-      stops: 0,
-      duration: "1h 30m"
-    },
-    {
-      id: "2",
-      origin,
-      destination,
-      departureDate: `${date.toISOString().split('T')[0]} 14:00`,
-      arrivalDate: `${date.toISOString().split('T')[0]} 16:30`,
-      price: 45000,
-      miles: 12000,
-      stops: 1,
-      duration: "2h 30m"
-    },
-    {
-      id: "3",
-      origin,
-      destination,
-      departureDate: `${date.toISOString().split('T')[0]} 19:00`,
-      arrivalDate: `${date.toISOString().split('T')[0]} 20:30`,
-      price: 55000,
-      miles: 18000,
-      stops: 0,
-      duration: "1h 30m"
-    }
-  ];
+      departureDate: `${date.toISOString().split('T')[0]} ${String(baseHour).padStart(2, '0')}:00`,
+      arrivalDate: `${date.toISOString().split('T')[0]} ${String((baseHour + durationHours) % 24).padStart(2, '0')}:00`,
+      price: Math.floor(Math.random() * 100000) + 30000,
+      miles: Math.floor(Math.random() * 20000) + 10000,
+      stops: Math.floor(Math.random() * 2),
+      duration: `${durationHours}h 00m`,
+      airline
+    });
+  }
+
+  return flights;
 };
 
 export const SearchForm = () => {

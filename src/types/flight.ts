@@ -1,3 +1,10 @@
+
+export interface Airline {
+  code: string;
+  name: string;
+  logo: string;
+}
+
 export interface Flight {
   id: string;
   origin: string;
@@ -8,4 +15,5 @@ export interface Flight {
   miles: number;
   stops: number;
   duration: string;
+  airline: Airline;
 }
