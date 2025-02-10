@@ -39,6 +39,14 @@ const generateMockFlights = (origin: string, destination: string, date?: Date): 
     const baseHour = Math.floor(Math.random() * 24);
     const durationHours = Math.floor(Math.random() * 8) + 1;
     const airline = airlines[Math.floor(Math.random() * airlines.length)];
+    const basePrice = Math.floor(Math.random() * 100000) + 30000;
+    
+    // Generate a direct price that's usually higher than miles price
+    const directPrice = Math.floor(basePrice * (1 + Math.random() * 0.5));
+    
+    // Randomly assign price level based on historical "data"
+    const priceLevels: Array<'low' | 'normal' | 'high'> = ['low', 'normal', 'high'];
+    const priceLevel = priceLevels[Math.floor(Math.random() * priceLevels.length)];
     
     flights.push({
       id: String(i + 1),
@@ -46,7 +54,9 @@ const generateMockFlights = (origin: string, destination: string, date?: Date): 
       destination,
       departureDate: `${date.toISOString().split('T')[0]} ${String(baseHour).padStart(2, '0')}:00`,
       arrivalDate: `${date.toISOString().split('T')[0]} ${String((baseHour + durationHours) % 24).padStart(2, '0')}:00`,
-      price: Math.floor(Math.random() * 100000) + 30000,
+      price: basePrice,
+      directPrice,
+      priceLevel,
       miles: Math.floor(Math.random() * 20000) + 10000,
       stops: Math.floor(Math.random() * 2),
       duration: `${durationHours}h 00m`,

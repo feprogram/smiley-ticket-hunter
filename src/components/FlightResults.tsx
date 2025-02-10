@@ -11,7 +11,7 @@ import {
 import { Flight } from "@/types/flight";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, ArrowUpDown } from "lucide-react";
+import { ExternalLink, ArrowUpDown, TrendingDown, TrendingUp, Minus } from "lucide-react";
 
 interface FlightResultsProps {
   flights: Flight[];
@@ -60,22 +60,32 @@ export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) =
 
   const handleRedirectToSmiles = (flight: Flight) => {
     const formattedDate = flight.departureDate.split(' ')[0];
-    const baseUrl = "https://www.smiles.com.ar/emissao-com-milhas";
+    const baseUrl = "https://www.smiles.com.ar/emission";
     const params = new URLSearchParams({
-      tripType: '1',
       originAirportCode: flight.origin,
       destinationAirportCode: flight.destination,
       departureDate: formattedDate,
       adults: '1',
       children: '0',
       infants: '0',
-      cabinType: 'ec',
-      highlightedBox: 'smiles'
+      cabinType: 'all',
+      tripType: 'oneWay'
     });
     window.open(`${baseUrl}?${params.toString()}`, '_blank');
   };
 
   const calculateTax = (price: number) => price * 0.75;
+
+  const getPriceLevelIcon = (priceLevel: 'low' | 'normal' | 'high') => {
+    switch (priceLevel) {
+      case 'low':
+        return <TrendingDown className="text-green-500 inline-block ml-1" size={16} />;
+      case 'high':
+        return <TrendingUp className="text-red-500 inline-block ml-1" size={16} />;
+      default:
+        return <Minus className="text-gray-500 inline-block ml-1" size={16} />;
+    }
+  };
 
   return (
     <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
@@ -140,7 +150,11 @@ export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) =
               <TableCell>
                 <div className="space-y-1 text-right">
                   <div className="font-medium">
-                    Base: {formatCurrency(flight.price)}
+                    Precio con millas: {formatCurrency(flight.price)}
+                    {getPriceLevelIcon(flight.priceLevel)}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Precio directo: {formatCurrency(flight.directPrice)}
                   </div>
                   <div className="text-sm text-gray-500">
                     Impuestos: {formatCurrency(calculateTax(flight.price))}

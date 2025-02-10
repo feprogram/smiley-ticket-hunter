@@ -12,6 +12,8 @@ export interface Flight {
   departureDate: string;
   arrivalDate: string;
   price: number;
+  directPrice: number;
+  priceLevel: 'low' | 'normal' | 'high';
   miles: number;
   stops: number;
   duration: string;
