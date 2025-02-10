@@ -12,6 +12,7 @@ import { Flight } from "@/types/flight";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, ArrowUpDown, TrendingDown, TrendingUp, Minus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface FlightResultsProps {
   flights: Flight[];
@@ -21,6 +22,7 @@ type SortField = 'departureDate' | 'airline' | 'price';
 
 export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) => {
   const [flights, setFlights] = useState(initialFlights);
+  const [stopFilter, setStopFilter] = useState<'all' | 'direct' | 'with-stops'>('all');
   const [sortConfig, setSortConfig] = useState<{
     field: SortField;
     direction: 'asc' | 'desc';
@@ -58,6 +60,19 @@ export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) =
     setSortConfig({ field, direction });
   };
 
+  const handleStopFilterChange = (value: string) => {
+    setStopFilter(value as 'all' | 'direct' | 'with-stops');
+    
+    let filteredFlights = [...initialFlights];
+    if (value === 'direct') {
+      filteredFlights = filteredFlights.filter(flight => flight.stops === 0);
+    } else if (value === 'with-stops') {
+      filteredFlights = filteredFlights.filter(flight => flight.stops > 0);
+    }
+    
+    setFlights(filteredFlights);
+  };
+
   const handleRedirectToSmiles = (flight: Flight) => {
     const formattedDate = flight.departureDate.split(' ')[0];
     const baseUrl = "https://www.smiles.com.ar/emission";
@@ -89,7 +104,20 @@ export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) =
 
   return (
     <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-2xl font-semibold mb-4">Vuelos Disponibles ({flights.length})</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold">Vuelos Disponibles ({flights.length})</h2>
+        <Select value={stopFilter} onValueChange={handleStopFilterChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filtrar por paradas" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los vuelos</SelectItem>
+            <SelectItem value="direct">Solo vuelos directos</SelectItem>
+            <SelectItem value="with-stops">Vuelos con escalas</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
       <Table>
         <TableHeader>
           <TableRow>
