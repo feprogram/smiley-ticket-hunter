@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { LocationInput } from "./LocationInput";
 import { DatePicker } from "./DatePicker";
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { LoadingState } from "./LoadingState";
 import { FlightResults } from "./FlightResults";
-import { Flight } from "@/types/flight";
+import { Flight, Airline } from "@/types/flight";
 import { FlightTypeSelect } from "./FlightTypeSelect";
 
 const airlines: Airline[] = [
