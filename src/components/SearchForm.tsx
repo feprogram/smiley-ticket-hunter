@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { LocationInput } from "./LocationInput";
 import { DatePicker } from "./DatePicker";
@@ -13,19 +12,19 @@ import { FlightTypeSelect } from "./FlightTypeSelect";
 
 const airlines: Airline[] = [
   { 
-    code: 'AR', 
-    name: 'Aerolíneas Argentinas',
-    logo: 'https://www.aerolineas.com.ar/favicon.ico'
+    code: 'UA', 
+    name: 'United Airlines',
+    logo: 'https://www.united.com/favicon.ico'
   },
   { 
-    code: 'LA', 
-    name: 'LATAM Airlines',
-    logo: 'https://www.latamairlines.com/favicon.ico'
+    code: 'AA', 
+    name: 'American Airlines',
+    logo: 'https://www.aa.com/favicon.ico'
   },
   { 
-    code: 'G3', 
-    name: 'GOL Linhas Aéreas',
-    logo: 'https://www.voegol.com.br/favicon.ico'
+    code: 'DL', 
+    name: 'Delta Air Lines',
+    logo: 'https://www.delta.com/favicon.ico'
   }
 ];
 
@@ -40,11 +39,7 @@ const generateMockFlights = (origin: string, destination: string, date?: Date): 
     const durationHours = Math.floor(Math.random() * 8) + 1;
     const airline = airlines[Math.floor(Math.random() * airlines.length)];
     const basePrice = Math.floor(Math.random() * 100000) + 30000;
-    
-    // Generate a direct price that's usually higher than miles price
     const directPrice = Math.floor(basePrice * (1 + Math.random() * 0.5));
-    
-    // Randomly assign price level based on historical "data"
     const priceLevels: Array<'low' | 'normal' | 'high'> = ['low', 'normal', 'high'];
     const priceLevel = priceLevels[Math.floor(Math.random() * priceLevels.length)];
     
