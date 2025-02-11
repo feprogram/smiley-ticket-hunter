@@ -13,6 +13,12 @@ interface LocationInputProps {
   className?: string;
 }
 
+interface GroupedAirports {
+  city: string;
+  country: string;
+  airports: typeof airports;
+}
+
 export const LocationInput = ({
   label,
   value,
@@ -21,7 +27,7 @@ export const LocationInput = ({
   className,
 }: LocationInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [predictions, setPredictions] = useState<typeof airports>([]);
+  const [predictions, setPredictions] = useState<GroupedAirports[]>([]);
   const [showPredictions, setShowPredictions] = useState(false);
 
   useEffect(() => {
@@ -31,7 +37,23 @@ export const LocationInput = ({
         airport.city.toLowerCase().includes(value.toLowerCase()) ||
         airport.name.toLowerCase().includes(value.toLowerCase())
       );
-      setPredictions(filtered);
+
+      // Agrupar aeropuertos por ciudad
+      const groupedByCity = filtered.reduce((acc: GroupedAirports[], airport) => {
+        const existingCity = acc.find(group => group.city === airport.city);
+        if (existingCity) {
+          existingCity.airports.push(airport);
+        } else {
+          acc.push({
+            city: airport.city,
+            country: airport.country,
+            airports: [airport]
+          });
+        }
+        return acc;
+      }, []);
+
+      setPredictions(groupedByCity);
       setShowPredictions(true);
     } else {
       setPredictions([]);
@@ -39,8 +61,8 @@ export const LocationInput = ({
     }
   }, [value]);
 
-  const handleSelect = (airport: typeof airports[0]) => {
-    onChange(airport.code);
+  const handleSelect = (value: string) => {
+    onChange(value);
     setShowPredictions(false);
   };
 
@@ -70,16 +92,24 @@ export const LocationInput = ({
       />
       {showPredictions && predictions.length > 0 && (
         <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-y-auto">
-          {predictions.map((airport) => (
-            <button
-              key={airport.code}
-              className="w-full text-left px-4 py-2 text-sm hover:bg-secondary"
-              onClick={() => handleSelect(airport)}
-            >
-              <span className="font-semibold">{airport.code}</span> - {airport.city}
-              <br />
-              <span className="text-xs text-gray-500">{airport.name}</span>
-            </button>
+          {predictions.map((group) => (
+            <div key={group.city} className="border-b border-gray-100 last:border-b-0">
+              <button
+                className="w-full text-left px-4 py-2 text-sm hover:bg-secondary font-medium"
+                onClick={() => handleSelect(group.airports[0].code)}
+              >
+                {group.city}, {group.country}
+              </button>
+              {group.airports.map((airport) => (
+                <button
+                  key={airport.code}
+                  className="w-full text-left px-8 py-2 text-sm hover:bg-secondary"
+                  onClick={() => handleSelect(airport.code)}
+                >
+                  <span className="font-semibold">{airport.code}</span> - {airport.name}
+                </button>
+              ))}
+            </div>
           ))}
         </div>
       )}
