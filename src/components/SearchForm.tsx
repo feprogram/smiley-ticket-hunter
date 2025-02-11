@@ -120,6 +120,23 @@ export const SearchForm = () => {
     }
   };
 
+  const handleExternalNavigation = (url: string) => {
+    // Ensure the URL is valid and external
+    try {
+      const urlObject = new URL(url);
+      if (urlObject.protocol === 'http:' || urlObject.protocol === 'https:') {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    } catch (error) {
+      console.error('Invalid URL:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo abrir el enlace externo",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -181,7 +198,12 @@ export const SearchForm = () => {
         </Button>
       </form>
 
-      <FlightResults flights={flights} />
+      {flights.length > 0 && (
+        <FlightResults 
+          flights={flights} 
+          onRedirectClick={(url) => handleExternalNavigation(url)}
+        />
+      )}
     </div>
   );
 };

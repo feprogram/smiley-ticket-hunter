@@ -14,11 +14,12 @@ import { FlightRow } from "./flight/FlightRow";
 
 interface FlightResultsProps {
   flights: Flight[];
+  onRedirectClick: (url: string) => void;
 }
 
 type SortField = 'departureDate' | 'airline' | 'price';
 
-export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) => {
+export const FlightResults = ({ flights: initialFlights, onRedirectClick }: FlightResultsProps) => {
   const [flights, setFlights] = useState(initialFlights);
   const [stopFilter, setStopFilter] = useState<'all' | 'direct' | 'with-stops'>('all');
   const [sortConfig, setSortConfig] = useState<{
@@ -84,7 +85,8 @@ export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) =
       cabinType: 'all',
       tripType: 'oneWay'
     });
-    window.open(`${baseUrl}?${params.toString()}`, '_blank');
+    const url = `${baseUrl}?${params.toString()}`;
+    onRedirectClick(url);
   };
 
   return (
