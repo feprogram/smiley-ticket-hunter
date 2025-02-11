@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Table,
@@ -102,6 +101,13 @@ export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) =
     }
   };
 
+  const formatUSD = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  };
+
   return (
     <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
       <div className="flex justify-between items-center mb-4">
@@ -182,7 +188,7 @@ export const FlightResults = ({ flights: initialFlights }: FlightResultsProps) =
                     {getPriceLevelIcon(flight.priceLevel)}
                   </div>
                   <div className="text-sm text-gray-500">
-                    Precio directo: {formatCurrency(flight.directPrice)}
+                    Precio en web: {formatUSD(flight.directPrice)}
                   </div>
                   <div className="text-sm text-gray-500">
                     Impuestos: {formatCurrency(calculateTax(flight.price))}
