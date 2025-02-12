@@ -31,7 +31,7 @@ const airlines: Airline[] = [
 const generateMockFlights = (origin: string, destination: string, date?: Date): Flight[] => {
   if (!origin || !destination || !date) return [];
 
-  const numFlights = Math.floor(Math.random() * 6) + 5;
+  const numFlights = Math.floor(Math.random() * 6) + 15;
   const flights: Flight[] = [];
 
   for (let i = 0; i < numFlights; i++) {
