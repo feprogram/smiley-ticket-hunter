@@ -11,7 +11,7 @@ import { Flight } from "@/types/flight";
 import { ArrowUpDown } from "lucide-react";
 import { FlightFilter } from "./flight/FlightFilter";
 import { FlightRow } from "./flight/FlightRow";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 interface FlightResultsProps {
   flights: Flight[];
@@ -74,8 +74,11 @@ export const FlightResults = ({ flights: initialFlights, onRedirectClick }: Flig
   };
 
   const handleRedirectToSmiles = (flight: Flight) => {
-    // Convertir la fecha al formato dd-MM-yyyy que espera Smiles
-    const dateObj = new Date(flight.departureDate);
+    // Primero parseamos la fecha del string que viene en el formato "YYYY-MM-DD HH:mm"
+    const [datePart] = flight.departureDate.split(' ');
+    const dateObj = parse(datePart, 'yyyy-MM-dd', new Date());
+    
+    // Luego la formateamos al formato que espera Smiles (dd-MM-yyyy)
     const formattedDate = format(dateObj, 'dd-MM-yyyy');
     
     const baseUrl = "https://www.smiles.com.ar/emission";
