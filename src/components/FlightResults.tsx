@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Table,
@@ -11,6 +10,7 @@ import { Flight } from "@/types/flight";
 import { ArrowUpDown } from "lucide-react";
 import { FlightFilter } from "./flight/FlightFilter";
 import { FlightRow } from "./flight/FlightRow";
+import { TimeRangeFilter, TimeRange } from "./flight/TimeRangeFilter";
 import { format, parse } from "date-fns";
 
 interface FlightResultsProps {
@@ -23,12 +23,55 @@ type SortField = 'departureDate' | 'airline' | 'price';
 export const FlightResults = ({ flights: initialFlights, onRedirectClick }: FlightResultsProps) => {
   const [flights, setFlights] = useState(initialFlights);
   const [stopFilter, setStopFilter] = useState<'all' | 'direct' | 'with-stops'>('all');
+  const [timeRange, setTimeRange] = useState<TimeRange>('all');
   const [sortConfig, setSortConfig] = useState<{
     field: SortField;
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  if (!flights.length) return null;
+  const applyFilters = (flights: Flight[]) => {
+    let filteredFlights = [...flights];
+
+    // Aplicar filtro de paradas
+    if (stopFilter === 'direct') {
+      filteredFlights = filteredFlights.filter(flight => flight.stops === 0);
+    } else if (stopFilter === 'with-stops') {
+      filteredFlights = filteredFlights.filter(flight => flight.stops > 0);
+    }
+
+    // Aplicar filtro de horario
+    if (timeRange !== 'all') {
+      filteredFlights = filteredFlights.filter(flight => {
+        const hour = parseInt(flight.departureDate.split(' ')[1].split(':')[0]);
+        switch (timeRange) {
+          case 'morning':
+            return hour >= 6 && hour < 12;
+          case 'afternoon':
+            return hour >= 12 && hour < 18;
+          case 'evening':
+            return hour >= 18 && hour < 24;
+          case 'night':
+            return hour >= 0 && hour < 6;
+          default:
+            return true;
+        }
+      });
+    }
+
+    return filteredFlights;
+  };
+
+  const handleStopFilterChange = (value: string) => {
+    setStopFilter(value as 'all' | 'direct' | 'with-stops');
+    const filteredFlights = applyFilters(initialFlights);
+    setFlights(filteredFlights);
+  };
+
+  const handleTimeRangeChange = (value: TimeRange) => {
+    setTimeRange(value);
+    const filteredFlights = applyFilters(initialFlights);
+    setFlights(filteredFlights);
+  };
 
   const handleSort = (field: SortField) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -60,19 +103,6 @@ export const FlightResults = ({ flights: initialFlights, onRedirectClick }: Flig
     setSortConfig({ field, direction });
   };
 
-  const handleStopFilterChange = (value: string) => {
-    setStopFilter(value as 'all' | 'direct' | 'with-stops');
-    
-    let filteredFlights = [...initialFlights];
-    if (value === 'direct') {
-      filteredFlights = filteredFlights.filter(flight => flight.stops === 0);
-    } else if (value === 'with-stops') {
-      filteredFlights = filteredFlights.filter(flight => flight.stops > 0);
-    }
-    
-    setFlights(filteredFlights);
-  };
-
   const handleRedirectToSmiles = (flight: Flight) => {
     // Primero parseamos la fecha del string que viene en el formato "YYYY-MM-DD HH:mm"
     const [datePart] = flight.departureDate.split(' ');
@@ -98,9 +128,12 @@ export const FlightResults = ({ flights: initialFlights, onRedirectClick }: Flig
 
   return (
     <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <h2 className="text-2xl font-semibold">Vuelos Disponibles ({flights.length})</h2>
-        <FlightFilter value={stopFilter} onValueChange={handleStopFilterChange} />
+        <div className="flex flex-col sm:flex-row gap-4">
+          <TimeRangeFilter value={timeRange} onValueChange={handleTimeRangeChange} />
+          <FlightFilter value={stopFilter} onValueChange={handleStopFilterChange} />
+        </div>
       </div>
       
       <Table>
