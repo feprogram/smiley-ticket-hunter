@@ -16,6 +16,19 @@ export const FlightRow = ({ flight, onRedirect }: FlightRowProps) => {
   const taxAmount = calculateTax(flight.price);
   const totalAmount = flight.price + taxAmount;
 
+  const getAirlineUrl = (flight: Flight) => {
+    const [datePart] = flight.departureDate.split(' ');
+    const formattedDate = datePart.split('-').join('');
+    
+    const airlineUrls: { [key: string]: string } = {
+      'UA': `https://www.united.com/ual/es/us/flight-search/book-a-flight/results/rev?f=${flight.origin}&t=${flight.destination}&d=${formattedDate}&tt=1&sc=7&px=1&taxng=1&idx=1`,
+      'AA': `https://www.aa.com/booking/finds/${flight.origin}-${flight.destination}?locale=es_AR&numberOfAdults=1&departureDate=${datePart}`,
+      'DL': `https://www.delta.com/flight-search/book-a-flight?cacheKeySuffix=SB&f=${flight.origin}&t=${flight.destination}&d=${datePart}&selectingFare=1&meetingEventCode=&refundableFlightsOnly=false&returnFromFlex=1&returnToFlex=1`
+    };
+
+    return airlineUrls[flight.airline.code] || '#';
+  };
+
   return (
     <TableRow>
       <TableCell>
@@ -65,8 +78,18 @@ export const FlightRow = ({ flight, onRedirect }: FlightRowProps) => {
               Total: {formatCurrency(totalAmount)} ARS
             </div>
           </div>
-          <div className="text-sm font-medium text-gray-600">
-            Precio en web: {formatUSD(flight.directPrice)}
+          <div className="flex items-center justify-end space-x-2">
+            <div className="text-sm font-medium text-gray-600">
+              Precio en web: {formatUSD(flight.directPrice)}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.open(getAirlineUrl(flight), '_blank', 'noopener,noreferrer')}
+              className="px-2"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </TableCell>
